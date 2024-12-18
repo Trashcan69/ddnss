@@ -1,0 +1,19 @@
+ddnss (0.3) unstable; urgency=medium
+
+  * Check HOSTNAME before GATEWAY
+  * Changed logging
+
+ -- Marcel Jueling <Marcel.Jueling@gmx.de>  Tue, 17 Dec 2024 15:25:25 +0100
+
+ddnss (0.2) unstable; urgency=medium
+
+  * Added debian/ddnss.default and debian/ddnss.logrotate
+  * Removed variable PATH from debian/ddnss.cron.d
+
+ -- Marcel Jueling <Marcel.Jueling@gmx.de>  Sun, 24 Nov 2024 18:36:18 +0100
+
+ddnss (0.1) unstable; urgency=medium
+
+  * Initial release
+
+ -- Marcel Jueling <Marcel.Jueling@gmx.de>  Fri, 12 Jan 2024 12:33:51 +0100

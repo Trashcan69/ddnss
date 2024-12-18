@@ -1,0 +1,18 @@
+#
+# DDNSS configuration
+#
+# Set to 1 to enable DDNSS
+ENABLE=0
+
+# Log last ip-address
+LOG_IP=0
+
+# At least one hostname is required
+HOSTNAME=
+
+# Login with key (preferred)
+KEY=
+
+# Or login with username and password
+USERNAME=
+PASSWORD=

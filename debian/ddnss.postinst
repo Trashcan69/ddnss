@@ -1,0 +1,58 @@
+#!/bin/sh
+
+[ x$1 = xconfigure ] || exit 1
+
+CONF=/etc/default/ddnss
+
+[ ! -e $CONF ] || . $CONF
+
+HOSTNAME=$(dialog --stdout --inputbox "Enter hostname(s)" 0 0 "$HOSTNAME")
+
+if dialog --yesno "Use Key?" 5 25; then
+    CONFIRM_KEY="unset"
+    while [ x$KEY != x$CONFIRM_KEY ]; do
+	KEY=$(dialog --stdout --clear --insecure --passwordbox "Enter key" 0 52 "$KEY")
+	CONFIRM_KEY=$(dialog --stdout --clear --insecure --passwordbox "Enter key again" 0 52 "$KEY")
+    done
+else
+    USERNAME=$(dialog --stdout --inputbox "Enter username" 0 0 "$USERNAME")
+    CONFIRM_PASSWORD="unset"
+    while [ x$PASSWORD != x$CONFIRM_PASSWORD ]; do
+	PASSWORD=$(dialog --stdout --clear --insecure --passwordbox "Enter password" 0 0 "$PASSWORD")
+	CONFIRM_PASSWORD=$(dialog --stdout --clear --insecure --passwordbox "Enter password again" 0 0 "$PASSWORD")
+    done
+fi
+
+if dialog --yesno "Log ip-address?" 5 25; then
+    LOG_IP=1
+else
+    LOG_IP=0
+fi
+
+if dialog --yesno "Enable DDNSS service?" 5 25; then
+    ENABLE=1
+else
+    ENABLE=0
+fi
+
+cat >$CONF <<EOF
+#
+# DDNSS configuration
+#
+ENABLE=$ENABLE
+LOG_IP=$LOG_IP
+HOSTNAME=$HOSTNAME
+EOF
+
+if [ x$KEY != x ]; then
+    echo "KEY=$KEY" >>$CONF
+else
+    echo "USERNAME=$USERNAME" >>$CONF
+    echo "PASSWORD=$PASSWORD" >>$CONF
+fi
+
+chown 0:0 $CONF /etc/cron.d/ddnss
+chmod 0600 $CONF /etc/cron.d/ddnss
+chmod 0700 /usr/local/sbin/ddnss
+
+exit 0
