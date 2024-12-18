@@ -10,7 +10,7 @@ IP_ADDR=0.0.0.0
 CACHE_DIR=/var/cache/ddnss
 EXT_URL=http://icanhazip.com
 PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin
-LOGFILE=$CACHE_DIR/history
+LOGFILE=$CACHE_DIR/.history
 
 print() { [ x$VERBOSE != x1 ] || echo "$1"; logger -t ddnss[$$] "$1"; [ -z "$2" ] || exit $2; }
 
