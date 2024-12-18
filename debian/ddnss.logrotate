@@ -1,4 +1,4 @@
-/var/cache/ddnss/history {
+/var/cache/ddnss/.history {
 	rotate 12
 	monthly
 	compress
