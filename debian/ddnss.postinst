@@ -1,0 +1,78 @@
+#!/bin/sh
+
+[ x$1 = xconfigure ] || exit 0
+
+CONF=/etc/default/ddnss
+
+[ ! -e $CONF ] || . $CONF
+
+HOSTNAMES=$(dialog --stdout --inputbox "Enter hostname(s)" 0 0 "$HOSTNAMES")
+
+if dialog --yesno "Use Key?" 5 25; then
+    CONFIRM_KEY="unset"
+    while [ x$KEY != x$CONFIRM_KEY ]; do
+	KEY=$(dialog --stdout --clear --insecure --passwordbox "Enter key" 0 52 "$KEY")
+	CONFIRM_KEY=$(dialog --stdout --clear --insecure --passwordbox "Enter key again" 0 52 "$KEY")
+    done
+else
+    USERNAME=$(dialog --stdout --inputbox "Enter username" 0 0 "$USERNAME")
+    CONFIRM_PASSWORD="unset"
+    while [ x$PASSWORD != x$CONFIRM_PASSWORD ]; do
+	PASSWORD=$(dialog --stdout --clear --insecure --passwordbox "Enter password" 0 0 "$PASSWORD")
+	CONFIRM_PASSWORD=$(dialog --stdout --clear --insecure --passwordbox "Enter password again" 0 0 "$PASSWORD")
+    done
+fi
+
+if dialog --yesno "Log ip-address?" 5 25; then
+    LOG_IP=1
+else
+    LOG_IP=0
+fi
+
+if dialog --yesno "Enable DDNSS service?" 5 25; then
+    ENABLE=1
+else
+    ENABLE=0
+fi
+
+if dialog --yesno "Enable DDNSS update?" 5 25; then
+    UPDATE=1
+else
+    UPDATE=0
+fi
+
+cat >$CONF <<EOF
+#
+# DDNSS configuration
+#
+# Set to '1' or 'true' to enable DDNSS
+ENABLE=$ENABLE
+
+# Space separated hosts
+HOSTNAMES="$HOSTNAMES"
+
+# Set either HOSTNAME/PASSWORD or KEY
+# KEY is preferred
+EOF
+
+if [ x$KEY != x ]; then
+    echo "KEY=$KEY" >>$CONF
+else
+    echo "USERNAME=$USERNAME" >>$CONF
+    echo "PASSWORD=$PASSWORD" >>$CONF
+fi
+
+cat >>$CONF <<EOF
+
+# Set to '1' or 'true' to enable logging
+LOG_IP=$LOG_IP
+
+# Set to '1' or 'true' to update the ip-address
+UPDATE=$UPDATE
+EOF
+
+chown 0:adm $CONF /usr/local/sbin/ddnss
+chmod 0660 $CONF
+chmod 0750 /usr/local/sbin/ddnss
+
+exit 0

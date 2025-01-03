@@ -1,0 +1,73 @@
+#!/bin/sh
+#
+# Set either username/password or key in /etc/default/ddnss.
+# The key is preferred.
+#
+PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin
+
+ENABLE=false
+UPDATE=false
+LOG_IP=false
+CONFIG=/etc/default/ddnss
+IP_ADDR=0.0.0.0
+CACHE_DIR=/var/cache/ddnss
+EXT_URL=http://icanhazip.com
+LOGFILE=/var/log/ddnss
+
+print() { echo "$1"; [ x$2 = x ] || exit $2; }
+
+[ x$(whoami) = xroot ] || print "You're not root" 1
+[ -e "$CONFIG" ] || print "Configuration file $CONFIG not found" 1
+. $CONFIG
+
+[ x$ENABLE != x1 ] || [ x$ENABLE != xtrue ] || print "ddnss is disabled in $CONFIG" 1
+[ x$HOSTNAMES != x ] || print "HOSTNAMES is not set in $CONFIG" 1
+GATEWAY="$(route -n | grep ^0.0.0.0 | tail -n1 | cut -d' ' -f10)"
+[ x$GATEWAY != x ] || print "No default gateway" 1
+[ -d "$CACHE_DIR" ] || mkdir -p $CACHE_DIR || print "Can't create $CACHE_DIR" 1
+[ -f "$CACHE_DIR/ip-address" ] || echo $IP_ADDR >$CACHE_DIR/ip-address || print "Can't create $CACHE_DIR/ip-address" 1
+
+if [ x$KEY = x ]; then
+    [ -n "$USERNAME" ] || print "USERNAME is not set in $CONFIG" 1
+    [ -n "$PASSWORD" ] || print "PASSWORD is not set in $CONFIG" 1
+fi
+
+IP_ADDR=$(wget -qO- "http://$GATEWAY:49000/igdupnp/control/WANIPConn1"\
+ --header "Content-Type: text/xml; charset="utf-8""\
+ --header "SoapAction:urn:schemas-upnp-org:service:WANIPConnection:1#GetExternalIPAddress"\
+ --post-data="<?xml version='1.0' encoding='utf-8'?>\
+ <s:Envelope s:encodingStyle='http://schemas.xmlsoap.org/soap/encoding/'\
+ xmlns:s='http://schemas.xmlsoap.org/soap/envelope/'>\
+ <s:Body> <u:GetExternalIPAddress xmlns:u='urn:schemas-upnp-org:service:WANIPConnection:1' />\
+ </s:Body> </s:Envelope>" | grep -Eo '\<[[:digit:]]{1,3}(\.[[:digit:]]{1,3}){3}\>')
+
+[ x$IP_ADDR != x0.0.0.0 ] || IP_ADDR=$(curl -sk $EXT_URL)
+[ x$IP_ADDR != x ] || IP_ADDR=0.0.0.0
+
+if [ x$IP_ADDR != x$(cat $CACHE_DIR/ip-address) ]; then
+    if [ x$LOG_IP = x1 ] || [ x$LOG_IP = xtrue ]; then
+	if [ x$(cat $CACHE_DIR/ip-address) != x0.0.0.0 ]; then
+	    echo -n "$(date +%Y.%m.%d-%H:%M:%S): " >>$LOGFILE
+	    cat $CACHE_DIR/ip-address >>$LOGFILE
+	fi
+    fi
+    echo $IP_ADDR >$CACHE_DIR/ip-address
+    logger -t ddnss[$$] "Aktuelle IP-Adresse: $IP_ADDR"
+
+    for HOST in $HOSTNAMES; do [ -e $CACHE_DIR/$HOST ] || ln -s $CACHE_DIR/ip-address $CACHE_DIR/$HOST; done
+
+    if [ x$UPDATE = x1 ] || [ x$UPDATE = xtrue ]; then
+	HOSTS="$(echo $HOSTNAMES | sed s/\ /\,/g | sed s/\;/\,/g)"
+	if [ x$KEY != x ]; then
+	    curl -sk "https://www.ddnss.de/upd.php?key=$KEY&host=$HOSTS" >/dev/null 2>&1
+	else
+	    curl -sk "https://www.ddnss.de/upd.php?user=$USERNAME&pwd=$PASSWORD&host=$HOSTS" >/dev/null 2>&1
+	fi
+    fi
+fi
+
+if [ x$1 = x-v ] || [ x$1 = x--verbose ]; then
+    echo $IP_ADDR
+fi
+
+exit 0

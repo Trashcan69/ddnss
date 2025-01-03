@@ -1,0 +1,18 @@
+Source: ddnss
+Section: net
+Priority: optional
+Maintainer: Marcel Jueling <Marcel.Jueling@gmx.de>
+Build-Depends: debhelper (>= 10)
+Standards-Version: 4.1.3
+Homepage: https://www.jueling.de
+
+Package: ddnss
+Architecture: all
+Depends: ${misc:Depends}, dialog, wget, curl
+Description: DDNSS client
+ Dynamic DNS or DDNS is a technology for dynamically updating domains in the
+ Domain Name System (DNS). The purpose is for a computer (e.g. a PC or a router)
+ to automatically and quickly change the associated domain entry after changing
+ its IP address. This means that the computer can always be reached under the
+ same domain name, even if the current IP address is unknown to the user.
+ (Source: https://ddnss.de)

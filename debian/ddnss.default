@@ -1,0 +1,20 @@
+#
+# DDNSS configuration
+#
+# Set to '1' or 'true' to enable DDNSS
+ENABLE=0
+
+# Space separated hosts
+HOSTNAMES=""
+
+# Set either HOSTNAME/PASSWORD or KEY
+# KEY is preferred
+USERNAME=
+PASSWORD=
+KEY=
+
+# Set to '1' or 'true' to enable logging
+LOG_IP=0
+
+# Set to '1' or 'true' to update the ip-address
+UPDATE=0

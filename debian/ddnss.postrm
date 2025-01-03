@@ -1,0 +1,8 @@
+#!/bin/sh
+
+[ x$1 = xpurge ] || exit 0
+
+rm -f /etc/default/ddnss
+rm -rf /var/cache/ddnss /var/log/ddnss*
+
+exit 0

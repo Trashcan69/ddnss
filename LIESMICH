@@ -1,0 +1,85 @@
+#
+# https://ddnss.de
+#
+
+Update-Syntax und Grundeinstellungen
+
+IP / URL Upate :
+
+Syntax ( User & PWD & Host ggf ersetzen !!! ) :
+
+http://ddnss.de/upd.php?user=USER&pwd=PASS&host=HOST1,HOST2
+
+oder: https://ddnss.de/upd.php?user=USER&pwd=PASS&host=HOST1,HOST2
+
+Key Update
+Sie können auch $key anstatt $user und $pwd benutzen, z.B :
+
+http://ddnss.de/upd.php?key=KEY&host=HOST1,HOST2
+
+oder: https://ddnss.de/upd.php?key=KEY&host=HOST1,HOST2
+
+    den Key ändern oder erstellen Sie auch direkt im direkt im Dashboard.
+
+Alle "Domains" Updaten
+
+Wenn Sie alle Hosts im einem Schritt updaten möchten, dann benutzen Sie zusätzlich:
+
+&host=all
+
+    Hierbei werden alle verfügbaren Domains aktualisiert.
+
+Externe IP
+
+Bei der Update wird Ihre IP Adresse Automatisch ermittelt, um auf eine andere IP adresse zu verweisen so verwenden Sie zusätzlich:
+
+&ip=IPADRESS
+
+    IPADRESS = z.B 217.79.184.12
+
+NS eintrag
+
+Möchten Sie einen NS Server betreiben, so können Sie nicht direkt den Updaten, ihre Fritz!box meldet so einen fehler, das bei der DNS auflösung ein fehler aufgetreten ist.
+Lösung:
+
+erstellen Sie zusätzlich einen A eintrag und tragen diesen als Domäne in ihre Fritzbox ein, zusätzlich hängen Sie einen &host=all hinzu.
+
+Weitere Hilfe auf ddnss.de/info.php !!!
+
+Zusätzliche MX Optionen
+
+Sie können auch eine extra &mx= variable nutzen (Nur bei IN A Hosts) :
+
+  &mx= : update ip (default)
+
+  &mx=0 : update ip + verbiete mx
+
+  &mx=1 : update ip + erlaube/update mx
+
+  &mx=2 : nur erlauben/update mx
+
+  &mx=3 : mx eintrag deaktivieren
+
+Fritz!Box
+
+Bei Der Fritz!Box gehen Sie wie folgt:
+
+DynDNS Menü wählen und Benutzdefinierte Dienst auswählen, dabei im feld "Update URL" fügen Sie das ein:
+
+http://www.ddnss.de/upd.php?user=<username>&pwd=<pass>&host=<domain>&ip=<ipaddr>&ip6=<ip6addr>
+
+Möchte ich ein Update für IP4 DNS eintrag erzwingen, so setze ich https://ip4.ddnss.de ein.
+
+
+    Fritz!Box Screenshot mit Beispielkonfiguration
+    Screenshot 
+
+    Hersteller Seite besuchen 
+
+    Grundsätzlich werden alle Router unterstürzt welche eine "Benutzerdefinierte DynDNS Konfiguration" erlauben.
+
+    Alternativ müssen Sie auf Scripte oder DNS-Updater ausweichen.
+
+    Ausührliche Info findest Du unter www.ddnss.de/Info
+
+    Außerdem findest du neben jeden Host den du erstellt hast, einen Button "Router Konfiguration" hier wird dir Konfiguration vorgeschlagen.( vHost Auflisten Task )
